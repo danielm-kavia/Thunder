@@ -1,0 +1,48 @@
+#!/bin/sh
+
+start() {
+    # Core dumps
+    # echo 1 > /proc/sys/kernel/core_uses_pid
+    # echo 2 > /proc/sys/fs/suid_dumpable
+    # echo "/root/Thunder/cores/core-pid_%p--process%E" > /proc/sys/kernel/core_pattern
+    # mkdir -p /root/Thunder/cores
+    # ulimit -c unlimited
+
+    # needed for wayland/westeros/weston
+    export XDG_RUNTIME_DIR=/home/kavia/workspace/code-generation/rdk_staging/var/run
+
+    echo -n "Starting Thunder: "
+    start-stop-daemon -S -q -b -m -p /home/kavia/workspace/code-generation/rdk_staging/var/run/Thunder.pid --exec /home/kavia/workspace/code-generation/rdk_staging/bin/Thunder -- -b </dev/null >/dev/null 2>&1
+    [ $? == 0 ] && echo "OK" || echo "FAIL"
+
+    # sleep 8
+    # echo 1 > /sys/class/graphics/fb0/blank
+}
+stop() {
+    echo -n "Stopping Thunder: "
+    start-stop-daemon -K -q -p /home/kavia/workspace/code-generation/rdk_staging/var/run/Thunder.pid
+    [ $? == 0 ] && echo "OK" || echo "FAIL"
+    rm -rf /home/kavia/workspace/code-generation/rdk_staging/var/run/Thunder.pid
+}
+restart() {
+    stop
+    sleep 3
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|reload)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
