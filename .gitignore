@@ -59,3 +59,5 @@ Thunder.cmake
 */*/*/generated/
 install_manifest.txt
 site/
+.file_activity_report.json
+.knowledge.kavia
